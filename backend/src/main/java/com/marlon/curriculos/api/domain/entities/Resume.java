@@ -1,5 +1,4 @@
-public package com.marlon.curriculos.api.domain.entities;
-
+package com.marlon.curriculos.api.domain.entities;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -8,10 +7,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-import org.hibernate.sql.Template;
 
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -30,7 +27,7 @@ public class Resume {
   @GeneratedValue(strategy = GenerationType.AUTO)
   private UUID id;
 
-  @ManyToOne(fetch = FectchType.LAZY)
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "user_id", nullable = false)
   private User user;
 
@@ -66,7 +63,7 @@ public class Resume {
 
   @UpdateTimestamp
   @Column(name = "update_at")
-  private LocalTime updatedAt;
+  private LocalDateTime updatedAt;
 
   @Column(name = "last_exported_at")
   private LocalDateTime lastExportedAt;
@@ -125,19 +122,18 @@ public class Resume {
 
   public void addSection(ResumeSection section) {
     section.setResume(this);
-
     section.setDisplayOrder(this.sections.size() + 1);
     this.sections.add(section);
   }
 
   public void removeSection(ResumeSection section) {
     this.sections.remove(section);
-    reorderSection();
+    reorderSections();
   }
 
   private void reorderSections() {
     for (int i = 0; i < sections.size(); i++) {
-      sections.get(i).setDisplayOrder(i + 1)
+      sections.get(i).setDisplayOrder(i + 1);
     }
   }
 
