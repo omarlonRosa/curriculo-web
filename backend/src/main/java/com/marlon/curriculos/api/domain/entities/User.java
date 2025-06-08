@@ -47,7 +47,7 @@ public class User {
   @Column(name = "date_of_birth")
   private LocalDate dateOfBirth;
 
-  @Column(name = "profile_picture_url")
+  @Column(name = "profile_picture_url", length = 500)
   private String profilePictureUrl;
 
 @Enumerated(EnumType.STRING)
@@ -116,5 +116,4 @@ private SubscriptionPlan subscriptionPlan = SubscriptionPlan.FREE;
   public String getFullname() {
     return firstName + " " + lastName;
   }
-
 }

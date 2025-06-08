@@ -15,100 +15,105 @@ import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.UUID;
 
-
-/**
- * Template
- */
-
 @Entity
 @Table(name = "templates")
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-
 public class Template {
-
-  @Id
-  @GeneratedValue(strategy = GenerationType.AUTO)
-  private UUID id;
-
-  @Column(columnDefinition = "TEXT")
-  private String description;
-
-  @Enumerated(EnumType.STRING)
-  @Column(nullable = false, length = 50)
-  private TemplateCategory category;
-
-  @Column(name = "preview_image_url", length = 500)
-  private String previewImageUrl; 
-
-  @JdbcTypeCode(SqlTypes.JSON)
-  @Column(columnDefinition = "jsonb", nullable = false)
-  private Map<String, Object> structure;
-
-  
-  @JdbcTypeCode(SqlTypes.JSON)
-  @Column(name = "default_theme", columnDefinition = "jsonb", nullable = false)
-  private Map<String, Object> defaultTheme;
-
-  @Column(name = "is_premium")
-  @Builder.Default
-  private Boolean isPremium = false;
-
-  @Column(precision = 3, scale = 2)
-  @Builder.Default
-  private Boolean isActive = true;
-
-  @CreationTimestamp
-  @Column(name = "created_at", nullable = false, updatable = false)
-  private LocalDateTime createdAt;
-
-  @UpdateTimestamp
-  @Column(name = "update_at")
-  private LocalDateTime updatedAt;
-
-  public enum TemplateCategory {
-    PROFESSIONAL("Profissional"),
-    CREATIVE("Criativo"),
-    MODERN("Moderno"),
-    CLASSIC("Clássico"),
-    MINIMALIST("Minimalista"),
-    ACADEMIC("Acadêmico"),
-    TECHNICAL("Técnico");
-
-    private final String displayName;
-
-    TemplateCategory(String displayName) {
-      this.displayName = displayName;
+    
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private UUID id;
+    
+    @Column(nullable = false, length = 200)
+    private String name;
+    
+    @Column(columnDefinition = "TEXT")
+    private String description;
+    
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 50)
+    private TemplateCategory category;
+    
+    @Column(name = "preview_image_url", length = 500)
+    private String previewImageUrl;
+    
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(columnDefinition = "jsonb", nullable = false)
+    private Map<String, Object> structure;
+    
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(name = "default_theme", columnDefinition = "jsonb", nullable = false)
+    private Map<String, Object> defaultTheme;
+    
+    @Column(name = "is_premium")
+    @Builder.Default
+    private Boolean isPremium = false;
+    
+    @Column(name = "usage_count")
+    @Builder.Default
+    private Integer usageCount = 0;
+    
+    @Column(precision = 3, scale = 2)
+    @Builder.Default
+    private BigDecimal rating = BigDecimal.ZERO;
+    
+    @Column(name = "is_active")
+    @Builder.Default
+    private Boolean isActive = true;
+    
+    @CreationTimestamp
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private LocalDateTime createdAt;
+    
+    @UpdateTimestamp
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
+    
+    public enum TemplateCategory {
+        PROFESSIONAL("Profissional"),
+        CREATIVE("Criativo"),
+        MODERN("Moderno"),
+        CLASSIC("Clássico"),
+        MINIMALIST("Minimalista"),
+        ACADEMIC("Acadêmico"),
+        TECHNICAL("Técnico");
+        
+        private final String displayName;
+        
+        TemplateCategory(String displayName) {
+            this.displayName = displayName;
+        }
+        
+        public String getDisplayName() {
+            return displayName;
+        }
     }
-    public String getDisplayName(){
-      return displayName;
+    
+    // Business methods
+    public void incrementUsage() {
+        this.usageCount++;
     }
-  }
-
-  public void incrementUsage() {
-    this.usageCount++;
-  }
-
-  public boolean isAvailableForUser(User.SubscriptionPlan userPlan) {
-    if (!isPremium) {
-      return true;
+    
+    public boolean isAvailableForUser(User.SubscriptionPlan userPlan) {
+        if (!isPremium) {
+            return true;
+        }
+        return userPlan == User.SubscriptionPlan.PREMIUM || 
+               userPlan == User.SubscriptionPlan.PROFESSIONAL;
     }
-    return userPlan == User.SubscriptionPlan.PREMIUM || userPlan == User.SubscriptionPlan.PROFESSIONAL;
-  }
-
-  public void updateRating(BigDecimal newRating) {
-    this.rating = newRating;
-  }
-
-  public void activate() {
-    this.isActive = true;
-  }
-
-  public void deactivate() {
-    this.isActive = false;
-  }
-
-
+    
+    public void updateRating(BigDecimal newRating) {
+        this.rating = newRating;
+    }
+    
+    public void activate() {
+        this.isActive = true;
+    }
+    
+    public void deactivate() {
+        this.isActive = false;
+    }
 }
